@@ -1,0 +1,156 @@
+version: "3"
+services:
+  db:
+    container_name: db
+    image: begr/p7-mysql:1.0
+    build:
+      context: ./mysql
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_ROOT_PASSWORD: pass
+    networks:
+      - emp-network
+  phpmyadmin:
+    depends_on:
+       - db
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    ports:
+       - '8080:80'
+    environment:
+        PMA_HOST: db
+    networks:
+      - emp-network       
+  config-server:
+    container_name: config-server
+    build:
+      context: ./docker
+      dockerfile: Dockerfile-config-server
+    image: begr/p7-config-server:1.0
+    expose:
+      - 9101
+    networks:
+      - emp-network
+  eureka:
+    container_name: eureka
+    build:
+      context: ./docker
+      dockerfile: Dockerfile-eureka
+    image: begr/p7-eureka-server:1.0
+    expose:
+      - 9102
+    ports:
+      - 9102:9102
+    networks:
+      - emp-network
+  users:
+    container_name: users
+    build:
+      context: ./docker
+      dockerfile: Dockerfile-users
+    image: begr/p7-users:1.0
+    expose:
+      - 9003
+    networks:
+      - emp-network
+    links:
+      - config-server:config-server
+      - eureka:eureka
+    depends_on:
+      - config-server
+      - eureka
+    logging:
+      driver: json-file
+  books:
+    container_name: books
+    build:
+      context: ./docker
+      dockerfile: Dockerfile-books
+    image: begr/p7-books:1.0
+    expose:
+      - 9001
+    networks:
+      - emp-network
+    links:
+      - config-server:config-server
+      - eureka:eureka
+    depends_on:
+      - config-server
+      - eureka
+    logging:
+      driver: json-file
+  emprunts:
+    container_name: emprunts
+    build:
+      context: ./docker
+      dockerfile: Dockerfile-emprunts
+    image: begr/p7-emprunts:1.0
+    expose:
+      - 9005
+    networks:
+      - emp-network
+    links:
+      - config-server:config-server
+      - eureka:eureka
+    depends_on:
+      - config-server
+      - eureka
+    logging:
+      driver: json-file
+  appliweb:
+    container_name: appliweb
+    build:
+      context: ./docker
+      dockerfile: Dockerfile-appliweb
+    image: begr/p7-appliweb:1.0
+    expose:
+      - 8086
+    ports:
+      - 8086:8086
+    networks:
+      - emp-network
+    links:
+      - config-server:config-server
+      - eureka:eureka
+    depends_on:
+      - config-server
+      - eureka
+    logging:
+      driver: json-file
+  batch:
+    container_name: batch
+    build:
+      context: ./docker
+      dockerfile: Dockerfile-batch
+    image: begr/p7-batch:1.0
+    networks:
+      - emp-network
+    links:
+      - config-server:config-server
+      - eureka:eureka
+    depends_on:
+      - config-server
+      - eureka
+    logging:
+      driver: json-file
+  zuul:
+    container_name: zuul
+    build:
+      context: ./docker
+      dockerfile: Dockerfile-zuul
+    image: begr/p7-zuulserver:1.0
+    expose:
+      - 9004
+    ports:
+      - 9004:9004
+    networks:
+      - emp-network
+    links:
+      - eureka:eureka
+    depends_on:
+      - eureka
+    logging:
+      driver: json-file
+networks:
+  emp-network:
+    driver: bridge

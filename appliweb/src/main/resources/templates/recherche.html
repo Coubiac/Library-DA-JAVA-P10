@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Accueil Bibliothèque</title>
+    <link rel="stylesheet" type="text/css" href="webjars/bootstrap/4.0.0-2/css/bootstrap.min.css" />
+</head>
+<body>
+<div class="container">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">Bibliotheque</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/">Livres</a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="/search">Recherche<span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/emprunts">Mes emprunts</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+
+
+    <h1>Application Bibliothèque</h1>
+    <H2>Recherche</H2>
+    <form th:action="@{/search/process}" method="get">
+        <div class="form-group">
+            <label for="title">Titre</label>
+            <input type="search" class="form-control" id="title" aria-describedby="titleHelp" placeholder="Entrez un titre" th:field="*{searchBean.title}">
+            <small id="titleHelp" class="form-text text-muted">Insérez un mot présent dans le titre.</small>
+        </div>
+        <div class="form-group">
+            <label for="author">Auteur</label>
+            <input type="search" class="form-control" id="author" aria-describedby="authorHelp" placeholder="Entrez un auteur" th:field="*{searchBean.author}">
+            <small id="authorHelp" class="form-text text-muted">Insérez le nom ou le prénom de l'auteur</small>
+        </div>
+        <button type="submit" class="btn btn-primary">Envoyer</button>
+    </form>
+
+</div>
+
+
+
+<script type="text/javascript" src="webjars/bootstrap/4.0.0-2/js/bootstrap.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Page de Login</title>
+    <link rel="stylesheet" type="text/css" href="webjars/bootstrap/4.0.0-2/css/bootstrap.min.css" />
+</head>
+<body>
+<div class="container">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">Bibliotheque</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link disabled" href="/">Livres <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link disabled" href="/search">Recherche</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link disabled" href="/emprunts">Mes emprunts</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+
+
+    <form method="post" th:action="@{/login}">
+        <div class = "form-group row ">
+            <div class="col-sm-8">
+                <div th:if="${error}">
+                    <div class="alert alert-danger">
+                        Désolé, vous avez rentré un mauvais nom d'utilisateur ou mot de passe
+                    </div>
+                </div>
+                <div th:if="${param.logout}">
+                    <div class="alert alert-info">
+                        Vous avez été déconnecté !
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="email">nom d'utilisateur:</label>
+            <input name="email" type="email" class="form-control" id="email" placeholder="email">
+        </div>
+        <div class="form-group">
+            <label for="password">Mot de passe</label>
+            <input type="password" name="password" class="form-control" id="password" placeholder="mot de passe">
+        </div>
+        <button type="submit" class="btn btn-primary">Envoyer</button>
+    </form>
+
+
+</div>
+
+
+
+<script type="text/javascript" src="webjars/bootstrap/4.0.0-2/js/bootstrap.min.js"></script>
+</body>
+</html>

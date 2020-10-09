@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Accueil Bibliothèque</title>
+    <link rel="stylesheet" type="text/css" href="../webjars/bootstrap/4.0.0-2/css/bootstrap.min.css" />
+</head>
+<body>
+<div class="container">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">Bibliotheque</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/">Livres</a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="/search">Recherche<span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/emprunts">Mes emprunts</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <h1>Application Bibliothèque</h1>
+    <h2>Résultats de la recherche</h2>
+    <div class="row">
+        <nav aria-label="...">
+            <ul class="pagination">
+                <li th:if="${currentPage == 1}" class="page-item disabled">
+                    <a class="page-link" th:with="urlBuilder=${T(org.springframework.web.servlet.support.ServletUriComponentsBuilder).fromCurrentRequest()}"
+                       th:href="${urlBuilder.replaceQueryParam('page', currentPage -1).toUriString()}">Précédent</a>
+                </li>
+                <li th:if="${currentPage != 1}" class="page-item">
+                    <a class="page-link" th:with="urlBuilder=${T(org.springframework.web.servlet.support.ServletUriComponentsBuilder).fromCurrentRequest()}"
+                       th:href="${urlBuilder.replaceQueryParam('page', currentPage -1).toUriString()}">Précédent</a>
+                </li>
+                <th:block th:each="pageNumber : ${pageNumbers}">
+                    <li th:if="${currentPage == pageNumber}" class="page-item active">
+                        <a class="page-link" th:with="urlBuilder=${T(org.springframework.web.servlet.support.ServletUriComponentsBuilder).fromCurrentRequest()}"
+                           th:text="${pageNumber}"
+                           th:href="${urlBuilder.replaceQueryParam('page', pageNumber).toUriString()}">100
+                        </a>
+                    </li>
+                    <li th:if="${currentPage != pageNumber}" class="page-item" >
+                        <a class="page-link" th:with="urlBuilder=${T(org.springframework.web.servlet.support.ServletUriComponentsBuilder).fromCurrentRequest()}"
+                           th:text="${pageNumber}"
+                           th:href="${urlBuilder.replaceQueryParam('page', pageNumber).toUriString()}">100
+                        </a>
+                    </li>
+                </th:block>
+                <li th:if="${currentPage < #lists.size(pageNumbers)}" class="page-item">
+                    <a class="page-link" th:with="urlBuilder=${T(org.springframework.web.servlet.support.ServletUriComponentsBuilder).fromCurrentRequest()}"
+                       th:href="${urlBuilder.replaceQueryParam('page', currentPage +1).toUriString()}">Suivant</a>
+                </li>
+                <li th:if="${currentPage >= #lists.size(pageNumbers)}" class="page-item disabled">
+                    <a class="page-link" th:with="urlBuilder=${T(org.springframework.web.servlet.support.ServletUriComponentsBuilder).fromCurrentRequest()}"
+                       th:href="${urlBuilder.replaceQueryParam('page', currentPage +1).toUriString()}">Suivant</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+            <tr>
+                <th scope="col">Auteur</th>
+                <th scope="col">Titre</th>
+                <th scope="col">Exemplaires</th>
+            </tr>
+            </thead>
+            <tbody th:each="livre : ${livres}">
+
+                <th scope="row"><a th:href="@{/view(bookId=${livre.getId()})}" th:text="${livre.author}"></a></th>
+                <th scope="row"><a th:href="@{/view(bookId=${livre.getId()})}" th:text="${livre.title}"></a></th>
+                <th th:text="${livre.quantiteDispo + '/' + #lists.size(livre.exemplaires)}" scope="row">titre</th>
+
+
+            </tbody>
+        </table>
+    </div>
+
+
+</div>
+
+<script type="text/javascript" src="../webjars/bootstrap/4.0.0-2/js/bootstrap.min.js"></script>
+</body>
+</html>

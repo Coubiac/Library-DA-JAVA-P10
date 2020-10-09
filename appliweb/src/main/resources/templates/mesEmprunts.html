@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Accueil Bibliothèque</title>
+    <link rel="stylesheet" type="text/css" href="webjars/bootstrap/4.0.0-2/css/bootstrap.min.css" />
+</head>
+<body>
+<div class="container">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">Bibliotheque</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/">Livres</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/search">Recherche</a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="/emprunts">Mes emprunts</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+
+    <h1>Application Bibliothèque</h1>
+    <div class="row">
+        <nav aria-label="...">
+            <ul class="pagination">
+                <li th:if="${currentPage == 1}" class="page-item disabled">
+                    <a class="page-link" th:href="@{/(page=${currentPage - 1})}">Précédent</a>
+                </li>
+                <li th:if="${currentPage != 1}" class="page-item">
+                    <a class="page-link" th:href="@{/(page=${currentPage - 1})}">Précédent</a>
+                </li>
+                <th:block th:each="pageNumber : ${pageNumbers}">
+                    <li th:if="${currentPage == pageNumber}" class="page-item active">
+                        <a th:text="${pageNumber}" class="page-link" th:href="@{/(page=${pageNumber})}">100</a>
+                    </li>
+                    <li th:if="${currentPage != pageNumber}" class="page-item" >
+                        <a th:text="${pageNumber}" class="page-link" th:href="@{/(page=${pageNumber})}">100</a>
+                    </li>
+
+                </th:block>
+                <li th:if="${currentPage < #lists.size(pageNumbers)}" class="page-item">
+                    <a class="page-link" th:href="@{/(page=${currentPage + 1})}">Suivant</a>
+                </li>
+                <li th:if="${currentPage >= #lists.size(pageNumbers)}" class="page-item disabled">
+                    <a class="page-link" th:href="@{/(page=${currentPage + 1})}">Suivant</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+            <tr>
+                <th scope="col">Emprunnt Id</th>
+                <th scope="col">Titre</th>
+                <th scope="col">Date Emprunt</th>
+                <th scope="col">Retour prévu</th>
+                <th scope="col">prolonger</th>
+            </tr>
+            </thead>
+            <tbody th:each="emprunt : ${emprunts}">
+            <tr th:if="${emprunt.getDateRetour() == null}">
+                <td th:text="${emprunt.getId()}">Emprunt Id</td>
+                <td><a th:href="@{/view(bookId=${emprunt.getBookId()})}" th:text="${emprunt.getBookTitle()}"></a></td>
+                <td th:text="${#dates.format(emprunt.getDateEmprunt(), 'dd/MM/yyyy')}" scope="row">dateEmprunt</td>
+                <td th:text="${#dates.format(emprunt.getDateRetourPrevu(), 'dd/MM/yyyy')}" scope="row">dateRetourPrevu</td>
+                <td scope="row">
+                    <span th:if="${emprunt.getDateRetourPrevu().after(#dates.createNow()) and emprunt.getIsExtended() == false}">
+                        <a class="btn btn-primary" th:href="@{/emprunts/prolonge(empruntId=${emprunt.getId()})}" role="button">Prolonger</a>
+                    </span>
+                    <span th:if="${emprunt.getDateRetourPrevu().before(#dates.createNow()) or emprunt.getIsExtended() == true }">
+                        <a class="btn btn-secondary" href="#" role="button">Prolonger</a>
+                    </span>
+                </td>
+
+
+            </tr>
+
+
+
+
+            </tbody>
+        </table>
+    </div>
+
+
+</div>
+
+<script type="text/javascript" src="webjars/bootstrap/4.0.0-2/js/bootstrap.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+
+<body>
+<nav th:fragment="menu" class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="#">Library</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <li sec:authorize="hasAuthority('USER')" class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle glyphicon glyphicon-user" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <svg id="i-user" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="20" height="20" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                        <path d="M22 11 C22 16 19 20 16 20 13 20 10 16 10 11 10 6 12 3 16 3 20 3 22 6 22 11 Z M4 30 L28 30 C28 21 22 20 16 20 10 20 4 21 4 30 Z" />
+                    </svg> <span sec:authentication="name">Bob</span>
+                </a>
+
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <form sec:authorize="isAuthenticated()" id='logout' th:action="@{/logout}" class="dropdown-item form-inline my-2 my-lg-0" method="post">
+                        <a class="dropdown-item" href="#" onclick="document.getElementById('logout').submit();">déconnexion</a>
+                    </form>
+                    <a sec:authorize="hasAuthority('USER')" class="dropdown-item" href="/topo/topoItemForm">Ajouter Topo</a>
+                    <a sec:authorize="hasAuthority('USER')" class="dropdown-item" href="/topo/myTopos">Mes Topos</a>
+                    <a sec:authorize="hasAuthority('USER')" class="dropdown-item" href="/reservation/mesEmprunts">Mes emprunts</a>
+                    <a sec:authorize="hasAuthority('USER')" class="dropdown-item" href="/reservation/reservationItemForm">Réserver un Topo</a>
+                    <a sec:authorize="hasAuthority('USER')" class="dropdown-item" href="/reservation/myReservations">Mes réservation</a>
+                </div>
+
+            </li>
+            <li sec:authorize="!isAuthenticated()" class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Connexion
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item" href="/login">Connexion</a>
+                    <a class="dropdown-item" href="/register">Créer compte</a>
+                </div>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Ajouter
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item" href="/site/siteItemForm">Site</a>
+                    <a class="dropdown-item" href="/secteur/secteurItemForm">Secteur</a>
+                    <a class="dropdown-item" href="/voie/voieItemForm">Voie</a>
+                    <a class="dropdown-item" href="/longueur/longueurItemForm">Longueur</a>
+                </div>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Voir
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item" href="/site/list">Sites</a>
+                    <a class="dropdown-item" href="/secteur/list">Secteurs</a>
+                    <a class="dropdown-item" href="/voie/list">Voies</a>
+                    <a class="dropdown-item" href="/longueur/list">Longueurs</a>
+                </div>
+            </li>
+        </ul>
+        <form class="form-inline my-2 my-lg-0" th:action="@{/site/find}"  method="get">
+            <input class="form-control mr-sm-2" name="searchQuery" type="search" placeholder="Search" aria-label="Search" th:value="*{searchQuery}">
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+        </form>
+
+
+    </div>
+</nav>
+</body>
+</html>
