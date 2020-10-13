@@ -1,6 +1,8 @@
 package com.library.reservations.entity;
 
 import lombok.Data;
+import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -19,10 +21,11 @@ public class ReservationEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long bookId;
+    private int bookId;
 
     private String userId;
 
+    @CreationTimestamp
     private Date dateReservation;
 
     private Boolean active;

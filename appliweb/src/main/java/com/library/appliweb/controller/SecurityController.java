@@ -7,6 +7,8 @@ import com.library.appliweb.configuration.Credentials;
 import com.library.appliweb.proxies.UserProxy;
 import com.library.appliweb.service.SecurityService;
 import feign.FeignException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.http.HttpHeaders;
@@ -34,6 +36,10 @@ public class SecurityController {
     UserProxy userProxy;
     @Autowired
     SecurityService securityService;
+
+    Logger logger = LoggerFactory.getLogger(SecurityController.class);
+
+
 
     @GetMapping(value = "/login")
     public String showLoginForm(Model model, String error, String logout) {
@@ -65,8 +71,9 @@ public class SecurityController {
             else return new ModelAndView("security/login");
         }
         catch (FeignException e){
+            logger.error("Erreur de login !",e);
             ModelAndView modelAndView = new ModelAndView("security/login");
-            modelAndView.addObject("error", "Votre nom d'utilisateur ou mot de passe est invalide.");
+            modelAndView.addObject("error", "Votre nom d'utilisateur ou mot de passe est invalide. " + e.getLocalizedMessage());
             return modelAndView;
         }
 
