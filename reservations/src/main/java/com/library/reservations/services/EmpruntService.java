@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Objects;
+
 
 
 @Service
@@ -61,9 +61,7 @@ public class EmpruntService {
 
     public int findExemplaires(int bookId){
         Collection<ExemplaireBean> exemplaireBeans = booksProxy.recupererExemplairesLivre(bookId).getContent();
-
-
-                return exemplaireBeans.size();
+        return exemplaireBeans.size();
     }
 
     public PagedModel<EmpruntBean> getEmpruntsByUserId(String userId)

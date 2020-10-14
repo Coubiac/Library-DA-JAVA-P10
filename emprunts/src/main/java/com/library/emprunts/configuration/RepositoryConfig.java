@@ -1,6 +1,7 @@
 package com.library.emprunts.configuration;
 
 import com.library.emprunts.data.EmpruntEntity;
+import com.library.emprunts.events.EmpruntEntityEventHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.PageRequest;
@@ -14,6 +15,11 @@ public class RepositoryConfig implements RepositoryRestConfigurer {
     @Override
     public void configureRepositoryRestConfiguration(RepositoryRestConfiguration config) {
         config.exposeIdsFor(EmpruntEntity.class);
+    }
+
+    @Bean
+    EmpruntEntityEventHandler empruntEntityEventHandler() {
+        return new EmpruntEntityEventHandler();
     }
 
     @Bean

@@ -1,4 +1,4 @@
-package com.library.reservations.beans;
+package com.library.emprunts.beans;
 
 import lombok.Data;
 

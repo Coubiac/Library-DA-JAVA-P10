@@ -10,6 +10,16 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Cette classe permet de contourner un bug existant dans spring data rest:
+ * https://jira.spring.io/browse/DATAREST-524
+ * Si faisons une requete http POST qui génère l'événement beforeCreate,
+ * notre application n'appellera pas le validateur car l'événement ne sera pas découvert,
+ * en raison de ce bug.
+ *
+ * Une solution simple à ce problème consiste à insérer tous les événements
+ * dans la classe ValidatingRepositoryEventListener de Spring Data REST :
+ */
 @Configuration
 public class ValidatorEventRegister implements InitializingBean {
 

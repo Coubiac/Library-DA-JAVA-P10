@@ -4,6 +4,9 @@ import lombok.Data;
 
 import java.util.Date;
 
+/**
+ * Cette classe représente un emprunt
+ */
 @Data
 public class EmpruntBean {
     private Long id;
