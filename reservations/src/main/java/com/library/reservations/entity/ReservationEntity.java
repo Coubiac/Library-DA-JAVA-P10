@@ -28,7 +28,9 @@ public class ReservationEntity {
     @CreationTimestamp
     private Date dateReservation;
 
-    private Boolean active = true;
+    private Boolean active = false;
+
+    private Date dateActive;
 
 
 

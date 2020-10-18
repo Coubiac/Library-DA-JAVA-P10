@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.logging.Logger;
 
 @Service
@@ -24,11 +25,22 @@ public class EmpruntManager {
     ReservationsProxy reservationsProxy;
 
 
-    public void updateReservationList(EmpruntEntity empruntEntity) {
+    public void updateReservationListOnCreate(EmpruntEntity empruntEntity) {
         ReservationBean theReservarion = getTheReservation(empruntEntity);
         if (theReservarion != null) {
             deleteReservation(theReservarion);
         }
+    }
+
+    public void updateReservationListOnDelete(EmpruntEntity empruntEntity){
+        String barcode = empruntEntity.getExemplaireBarcode();
+        ExemplaireBean theExemplaire = exemplaireProxy.recupererExemplaire(barcode).getContent();
+        BookBean theBook = theExemplaire.getBook();
+        ReservationBean theReservation = reservationsProxy.findNextReservation(theBook.getId()).getContent();
+        theReservation.setActive(true);
+        theReservation.setDateActive(new Date());
+        reservationsProxy.update(theReservation.getId(),theReservation);
+
     }
 
     private ReservationBean getTheReservation(EmpruntEntity empruntEntity) {
