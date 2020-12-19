@@ -35,10 +35,26 @@
          <version>4.0.0-2</version>
       </dependency>
       <dependency>
+         <groupId>org.webjars</groupId>
+         <artifactId>font-awesome</artifactId>
+         <version>5.15.1</version>
+      </dependency>
+      <dependency>
          <groupId>org.projectlombok</groupId>
          <artifactId>lombok</artifactId>
          <version>1.18.12</version>
          <scope>provided</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.springframework.boot</groupId>
+         <artifactId>spring-boot-devtools</artifactId>
+         <optional>true</optional>
+      </dependency>
+      <!-- https://mvnrepository.com/artifact/org.webjars/jquery -->
+      <dependency>
+         <groupId>org.webjars</groupId>
+         <artifactId>jquery</artifactId>
+         <version>3.5.1</version>
       </dependency>
 
       <dependency>

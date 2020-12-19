@@ -19,5 +19,6 @@ public class ApplicationConfiguration {
     String apiPassword;
     int joursEmprunt;
     int joursProlongation;
+    int activeReservationTime;
 
 }

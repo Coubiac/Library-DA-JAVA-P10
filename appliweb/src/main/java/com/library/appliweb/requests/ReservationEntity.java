@@ -1,16 +1,17 @@
-package com.library.batch.beans;
+package com.library.appliweb.requests;
 
 import lombok.Data;
 
 import java.util.Date;
 
 @Data
-public class ReservationBean {
+public class ReservationEntity {
 
-    private Long id;
+    private int id;
     private int bookId;
     private String userId;
     private Date dateReservation;
-    private Boolean active;
+    private boolean active;
     private Date dateActive;
+
 }

@@ -14,6 +14,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -26,11 +29,74 @@ public class ReservationService {
     @Autowired
     ApplicationConfiguration applicationConfiguration;
 
+    /**
+     * Cette méthode effectue une requete HTTP vers l'API reservation et récupère, pour chaque livre reservé,
+     * la reservation dont la date est la plus ancienne.
+     * @return Une liste de reservations.
+     * @throws JsonProcessingException
+     */
     public List<ReservationBean> getNextReservations() throws JsonProcessingException {
+        String url = applicationConfiguration.getApiReservationBaseUrl() + "search/byNextUser";
+        return callGet(url);
+    }
+
+
+    /**
+     * Cette methode effectue une requete HTTP vers l'API reservation et récupère toutes les reservations actives dont
+     * la date limite est dépassée. La date limite est liée à la propriété "batch.activeReservationTime"
+     * @return une liste de reservations
+     * @throws JsonProcessingException
+     */
+    public List<ReservationBean> getOutdatedActiveReservations() throws JsonProcessingException {
+
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(new Date());
+        cal.add(Calendar.HOUR_OF_DAY, -applicationConfiguration.getActiveReservationTime()); // remove 48 hours
+
+        String pattern = "yyyy-MM-dd'T'HH:mm:ss";
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+        String dateString = simpleDateFormat.format(cal.getTime());
+        String url = applicationConfiguration.getApiReservationBaseUrl() + "search/activeDateBefore?dateActive="+dateString;
+        return callGet(url);
+
+    }
+
+    /**
+     * Méthode qui ramène la reservation la plus ancienne
+     * @param bookId
+     * @return une réservation
+     */
+    public ReservationBean getFirstReservation(Integer bookId){
+        String url = applicationConfiguration.getApiReservationBaseUrl() + "search/nextReservation?bookId=" + bookId;
+        HttpEntity<String> request = new HttpEntity<>("body", securityService.authenticate());
+        RestTemplate restTemplate = myRequestFactory.getRestTemplate();
+        ResponseEntity<ReservationBean> responseEntity = restTemplate.exchange(url, HttpMethod.GET, request, ReservationBean.class);
+        if (responseEntity.getStatusCode().is2xxSuccessful()){
+            return responseEntity.getBody();
+        }
+        return null;
+    }
+
+    public void deleteReservation(int reservationId){
+        String url = applicationConfiguration.getApiReservationBaseUrl() + reservationId;
+        HttpEntity<String> request = new HttpEntity<>("body", securityService.authenticate());
+        RestTemplate restTemplate = myRequestFactory.getRestTemplate();
+        restTemplate.exchange(url, HttpMethod.DELETE, request, String.class);
+    }
+
+    /**
+     * Cette méthode effectue un appel à l'API reservation
+     * @param url
+     * @return une liste de ReservationBean
+     * @throws JsonProcessingException
+     */
+    private List<ReservationBean> callGet(String url) throws JsonProcessingException {
         RestTemplate restTemplate = myRequestFactory.getRestTemplate();
         HttpEntity<String> request = new HttpEntity<>("body", securityService.authenticate());
-        String url = applicationConfiguration.getApiReservationBaseUrl() + "search/byNextUser";
         ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, request, String.class);
+        if (!response.getStatusCode().is2xxSuccessful()) {
+            return null;
+        }
         String data = response.getBody();
         ObjectMapper om = new ObjectMapper();
         om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -38,6 +104,13 @@ public class ReservationService {
         String content = jsNode.at("/_embedded/reservationEntities").toString();
         return om.readValue(content, new TypeReference<List<ReservationBean>>() {
         });
+    }
+
+    public void update(ReservationBean theReservation) {
+        String url = applicationConfiguration.getApiReservationBaseUrl() + theReservation.getId();
+        RestTemplate restTemplate = myRequestFactory.getRestTemplate();
+        HttpEntity<ReservationBean> request = new HttpEntity<>(theReservation, securityService.authenticate());
+        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.PUT, request, String.class);
 
     }
 

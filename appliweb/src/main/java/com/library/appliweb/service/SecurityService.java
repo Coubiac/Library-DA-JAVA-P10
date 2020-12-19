@@ -1,7 +1,9 @@
 package com.library.appliweb.service;
 
 
+import com.library.appliweb.beans.UserBean;
 import com.library.appliweb.configuration.Credentials;
+import com.library.appliweb.proxies.UserProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
@@ -15,6 +17,9 @@ public class SecurityService {
 
     @Autowired
     private HttpSession session;
+
+    @Autowired
+    private UserProxy userProxy;
 
     public Boolean isAuthenticated()  {
 
@@ -42,6 +47,11 @@ public class SecurityService {
         this.credentials.setUserId(headers.getFirst("userId"));
         this.session.setAttribute("credentials", credentials);
         return credentials;
+    }
+
+    public UserBean getAuthenticatedUser(){
+        String userId =  credentials.getUserId();
+        return userProxy.getUserById(userId).getContent();
     }
 
 }

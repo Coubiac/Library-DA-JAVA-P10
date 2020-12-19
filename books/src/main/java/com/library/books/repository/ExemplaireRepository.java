@@ -1,5 +1,6 @@
 package com.library.books.repository;
 
+import com.library.books.entity.Book;
 import com.library.books.entity.Exemplaire;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;

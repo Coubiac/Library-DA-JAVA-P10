@@ -20,4 +20,9 @@ public class ReservationService {
         return reservationEntities.size();
     }
 
+    public Boolean isAlreadyReserved(int bookId, String userId){
+        List<ReservationEntity> reservationEntities = reservationRepository.findAllByBookIdAndUserId(bookId, userId);
+        return !reservationEntities.isEmpty();
+    }
+
 }
