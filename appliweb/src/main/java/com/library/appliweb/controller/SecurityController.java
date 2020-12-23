@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.library.appliweb.beans.LoginFormBean;
 import com.library.appliweb.configuration.ApplicationPropertiesConfiguration;
 import com.library.appliweb.configuration.Credentials;
+import com.library.appliweb.errors.UnauthorizedException;
 import com.library.appliweb.proxies.UserProxy;
 import com.library.appliweb.service.SecurityService;
 import feign.FeignException;
@@ -55,7 +56,6 @@ public class SecurityController {
 
     @PostMapping(value = "/login")
     public ModelAndView login(@ModelAttribute("userForm") LoginFormBean userForm, HttpServletRequest request) throws FeignException {
-
         try {
             ResponseEntity<Void> responseEntity = userProxy.getToken(userForm);
             if (responseEntity.getStatusCode().is2xxSuccessful()) {
@@ -70,13 +70,21 @@ public class SecurityController {
             }
             else return new ModelAndView("security/login");
         }
-        catch (FeignException e){
-            logger.error("Erreur de login !",e);
+        catch (UnauthorizedException e){
             ModelAndView modelAndView = new ModelAndView("security/login");
-            modelAndView.addObject("error", "Votre nom d'utilisateur ou mot de passe est invalide. " + e.getLocalizedMessage());
+            modelAndView.addObject("error", e.getLocalizedMessage());
             return modelAndView;
         }
 
+
+    }
+
+    @GetMapping(value = "/logout")
+    public RedirectView logout(){
+        securityService.removeAuthInSession();
+        RedirectView redirectView = new RedirectView();
+        redirectView.setUrl("/login");
+        return redirectView;
 
     }
 }

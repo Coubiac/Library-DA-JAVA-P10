@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.CharStreams;
 import feign.Response;
 import feign.codec.ErrorDecoder;
-import lombok.*;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -22,7 +21,12 @@ public class CustomErrorDecoder implements ErrorDecoder {
         String message = null;
         Reader reader = null;
 
+        if (response.status() == 401){
+            return new UnauthorizedException("Authentication failed: bad credentials");
+        }
+
         try {
+            System.out.println(response.status());
             reader = response.body().asReader();
             //Easy way to read the stream and get a String object
             String result = CharStreams.toString(reader);
@@ -37,13 +41,16 @@ public class CustomErrorDecoder implements ErrorDecoder {
 
             message = exceptionMessage.getMessage();
 
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
 
             e.printStackTrace();
-        } finally {
+        }
+        finally {
 
             //It is the responsibility of the caller to close the stream.
             try {
+
 
                 if (reader != null)
                     reader.close();
@@ -56,10 +63,10 @@ public class CustomErrorDecoder implements ErrorDecoder {
         switch (response.status()) {
 
             case 404:
-                return new ReservationException(message == null ? "File no found" :
+                return new CustomException(message == null ? "File no found" :
                         message);
             case 500:
-                return new ReservationException(message == null ? "Erreur interne" : message);
+                return new CustomException(message == null ? "Erreur interne" : message);
 
         }
 

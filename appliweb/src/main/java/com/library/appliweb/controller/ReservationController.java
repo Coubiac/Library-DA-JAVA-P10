@@ -1,32 +1,23 @@
 package com.library.appliweb.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+
 import com.library.appliweb.beans.BookBean;
 import com.library.appliweb.beans.EmpruntBean;
 import com.library.appliweb.beans.ReservationBean;
 import com.library.appliweb.configuration.ApplicationPropertiesConfiguration;
 import com.library.appliweb.configuration.Credentials;
-import com.library.appliweb.errors.ErrorMessage;
-import com.library.appliweb.errors.ReservationException;
+import com.library.appliweb.errors.CustomException;
 import com.library.appliweb.proxies.BooksProxy;
 import com.library.appliweb.service.EmpruntService;
 import com.library.appliweb.service.ReservationService;
 import com.library.appliweb.service.SecurityService;
-import feign.FeignException;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import org.springframework.hateoas.PagedResources;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.springframework.web.servlet.view.RedirectView;
-
 import java.io.IOException;
-
-import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -86,7 +77,7 @@ public class ReservationController {
             reservationService.addReservation(bookId, credentials.getUserId());
             return "redirect:/reservations";
         }
-        catch (ReservationException exception){
+        catch (CustomException exception){
             redirectAttributes.addFlashAttribute("error", exception.getMessage());
             return "redirect:/";
         }

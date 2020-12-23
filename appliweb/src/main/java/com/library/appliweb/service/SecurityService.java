@@ -49,6 +49,10 @@ public class SecurityService {
         return credentials;
     }
 
+    public void removeAuthInSession(){
+        this.session.removeAttribute("credentials");
+    }
+
     public UserBean getAuthenticatedUser(){
         String userId =  credentials.getUserId();
         return userProxy.getUserById(userId).getContent();

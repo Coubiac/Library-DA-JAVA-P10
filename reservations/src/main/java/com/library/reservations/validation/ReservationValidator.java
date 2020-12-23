@@ -33,12 +33,6 @@ public class ReservationValidator  implements Validator {
             throw new ReservationServiceException("Impossible de créer une nouvelle réservation: Des exemplaires sont deja disponibles");
         }
 
-        //La liste de réservation ne peut comporter qu’un maximum de personnes correspondant à
-        // 2x le nombre d’exemplaires de l’ouvrage.
-        if((reservationService.getReservationQuantityByBookId(bookId)) >= (2 * empruntService.findExemplaires(bookId))){
-            throw  new ReservationServiceException("Impossible de créer une nouvelle réservation: Il y a trop de reservations pour ce livre, essayez plus tard");
-        }
-
         //Il n’est pas possible pour un usager de réserver un ouvrage qu’il a déjà en cours d’emprunt
         if(empruntService.estDejaEmprunte(((ReservationEntity) o).getUserId(),((ReservationEntity) o).getBookId())){
             throw  new ReservationServiceException("Impossible de créer une nouvelle réservation: vous avez deja emprunte ce livre");
@@ -48,6 +42,13 @@ public class ReservationValidator  implements Validator {
         if(reservationService.isAlreadyReserved(bookId, ((ReservationEntity) o).getUserId())){
             throw  new ReservationServiceException("Impossible de créer une nouvelle réservation: vous avez deja réservé ce livre");
         }
+
+        //La liste de réservation ne peut comporter qu’un maximum de personnes correspondant à
+        // 2x le nombre d’exemplaires de l’ouvrage.
+        if((reservationService.getReservationQuantityByBookId(bookId)) >= (2 * empruntService.findExemplaires(bookId))){
+            throw  new ReservationServiceException("Impossible de créer une nouvelle réservation: Il y a trop de reservations pour ce livre, essayez plus tard");
+        }
+
 
 
     }
