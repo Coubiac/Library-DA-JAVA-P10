@@ -8,6 +8,7 @@ import feign.RequestLine;
 import org.springframework.cloud.netflix.ribbon.RibbonClient;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.hateoas.PagedResources;
+import org.springframework.hateoas.Resource;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -25,5 +26,11 @@ public interface ReservationProxy {
 
     @RequestMapping(method = RequestMethod.POST, value = "/reservations/reservations/", headers = "Content-Type: application/json")
     void create(ReservationPostRequest reservationPostRequest);
+
+    @RequestMapping(method = RequestMethod.DELETE, value = "/reservations/reservations/{reservationId}")
+    void delete(@PathVariable("reservationId") int reservationId);
+
+    @RequestMapping(method = RequestMethod.GET, value = "/reservations/reservations/{reservationId}")
+    Resource<ReservationEntity> getReservationById(@PathVariable("reservationId") int reservationId);
 
 }

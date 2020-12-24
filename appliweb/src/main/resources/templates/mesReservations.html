@@ -51,6 +51,7 @@
                 <td><a th:href="@{/view(bookId=${reservation.getBookBean().getId()})}" th:text="${reservation.getBookBean().getTitle()}"></a></td>
                 <td th:text="${reservation.getBookBean().getReservationPosition()}" scope="row">position</td>
                 <td th:text="${#dates.format(reservation.getBookBean().getNextReturn(), 'dd/MM/yyyy')}">Prochain retour</td>
+                <td><a class="btn btn-primary" th:href="@{/reservations/delete(reservationId=${reservation.getId()})}" role="button">Supprimer</a></td>
             </tr>
             </tbody>
         </table>

@@ -8,15 +8,20 @@ import com.library.appliweb.configuration.ApplicationPropertiesConfiguration;
 import com.library.appliweb.configuration.Credentials;
 import com.library.appliweb.errors.CustomException;
 import com.library.appliweb.proxies.BooksProxy;
+import com.library.appliweb.requests.ReservationEntity;
 import com.library.appliweb.service.EmpruntService;
 import com.library.appliweb.service.ReservationService;
 import com.library.appliweb.service.SecurityService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.view.RedirectView;
+
 import java.io.IOException;
 import java.util.List;
 
@@ -35,6 +40,8 @@ public class ReservationController {
     private EmpruntService empruntService;
     @Autowired
     private ReservationService reservationService;
+
+    Logger logger = LoggerFactory.getLogger(ReservationController.class);
 
     @GetMapping("/reservations")
     public String voirMesReservations(Model model, @RequestParam(required = false) Exception exception){
@@ -81,5 +88,21 @@ public class ReservationController {
             redirectAttributes.addFlashAttribute("error", exception.getMessage());
             return "redirect:/";
         }
+    }
+
+    @GetMapping("/reservations/delete")
+    public RedirectView Delete(@RequestParam int reservationId){
+        ReservationEntity theReservation = reservationService.getReservationEntityById(reservationId);
+        if (securityService.isAuthenticated() &&
+                (securityService.getAuthenticatedUser().getUserId().equals(theReservation.getUserId()))){
+            reservationService.deleteReservation(reservationId);
+            logger.info("la reservation n°" + reservationId + " a été supprimée");
+
+        }
+        RedirectView redirectView = new RedirectView();
+        redirectView.setUrl("/reservations");
+        return redirectView;
+
+
     }
 }

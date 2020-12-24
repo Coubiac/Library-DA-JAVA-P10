@@ -4,11 +4,14 @@ import com.library.appliweb.beans.BookBean;
 
 import com.library.appliweb.beans.ReservationBean;
 import com.library.appliweb.beans.UserBean;
+import com.library.appliweb.controller.ReservationController;
 import com.library.appliweb.proxies.BooksProxy;
 import com.library.appliweb.proxies.ReservationProxy;
 import com.library.appliweb.proxies.UserProxy;
 import com.library.appliweb.requests.ReservationEntity;
 import com.library.appliweb.requests.ReservationPostRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.PagedResources;
 
@@ -30,6 +33,19 @@ public class ReservationService {
     @Autowired
     private ReservationProxy reservationProxy;
 
+    Logger logger = LoggerFactory.getLogger(ReservationService.class);
+
+
+
+    public ReservationEntity getReservationEntityById(int reservationID){
+        return reservationProxy.getReservationById(reservationID).getContent();
+
+    }
+
+    public void deleteReservation(int reservationId){
+        logger.info("Delete the Reservation with id = " + reservationId);
+        reservationProxy.delete(reservationId);
+    }
 
     /**
      * Methode permettant d'obtenir toutes les réservations liées à un livre.
