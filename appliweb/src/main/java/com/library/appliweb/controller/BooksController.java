@@ -2,10 +2,12 @@ package com.library.appliweb.controller;
 
 
 import com.library.appliweb.beans.BookBean;
+import com.library.appliweb.beans.EmpruntBean;
 import com.library.appliweb.beans.SearchBean;
 import com.library.appliweb.configuration.ApplicationPropertiesConfiguration;
 import com.library.appliweb.proxies.BooksProxy;
 import com.library.appliweb.service.EmpruntService;
+import com.library.appliweb.service.ReservationService;
 import com.library.appliweb.service.SecurityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.PagedResources;
@@ -33,6 +35,8 @@ public class BooksController {
     private BooksProxy LivresProxy;
     @Autowired
     private EmpruntService empruntService;
+    @Autowired
+    private ReservationService reservationService;
 
 
     @RequestMapping("/")
@@ -43,9 +47,7 @@ public class BooksController {
         int size = appProperties.getLivresParPage();
         /** Attention, la numérotation des pages commence à 0 sur l'API !**/
         PagedResources<BookBean> livres = LivresProxy.listeDesLivres(page - 1, size);
-        for (BookBean livre:livres.getContent()) {
-            livre.setQuantiteDispo(empruntService.findExemplairesDispo(livre.getId()));
-        }
+        updateBookDispo(livres);
         Long totalPages = livres.getMetadata().getTotalPages();
         List<Integer> pageNumbers = new ArrayList<>();
         int thePage = 1;
@@ -57,7 +59,6 @@ public class BooksController {
         model.addAttribute("livres", livres);
         model.addAttribute("pageNumbers", pageNumbers);
         model.addAttribute("currentPage", page);
-
 
         return "Accueil";
     }
@@ -88,9 +89,7 @@ public class BooksController {
         int size = appProperties.getLivresParPage();
         /** Attention, la numérotation des pages commence à 0 sur l'API !**/
         PagedResources<BookBean> livres = LivresProxy.rechercherUnLivre(page - 1, size, searchBean.getAuthor(), searchBean.getTitle());
-        for (BookBean livre:livres.getContent()) {
-            livre.setQuantiteDispo(empruntService.findExemplairesDispo(livre.getId()));
-        }
+        updateBookDispo(livres);
         Long totalPages = livres.getMetadata().getTotalPages();
         List<Integer> pageNumbers = new ArrayList<>();
         int thePage = 1;
@@ -103,7 +102,22 @@ public class BooksController {
         model.addAttribute("pageNumbers", pageNumbers);
         model.addAttribute("currentPage", page);
 
-
         return "searchResult";
+    }
+
+    private void updateBookDispo(PagedResources<BookBean> livres){
+        for (BookBean livre:livres.getContent()) {
+            livre.setReservationBeans(reservationService.getBookReservations(livre));
+            livre.setQuantiteDispo(empruntService.findExemplairesDispo(livre.getId()));
+            String position = reservationService.
+                    getPositionInReservationList(securityService.getAuthenticatedUser(), livre);
+            if (position != null){
+                livre.setReservationPosition(position);
+            }
+            EmpruntBean nextActiveEmprunt = empruntService.getNextActiveEmprunt(livre);
+            if (nextActiveEmprunt != null){
+                livre.setNextReturn(empruntService.getNextActiveEmprunt(livre).getDateRetourPrevu());
+            }
+        }
     }
 }

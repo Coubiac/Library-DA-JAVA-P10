@@ -10,6 +10,7 @@ import org.springframework.data.querydsl.binding.QuerydslBindings;
 import org.springframework.data.querydsl.binding.SingleValueBinding;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+import org.springframework.data.rest.core.annotation.RestResource;
 
 @RepositoryRestResource(path = "books")
 public interface BookRepository extends PagingAndSortingRepository<Book, Integer>, QuerydslPredicateExecutor<Book>, QuerydslBinderCustomizer<QBook> {
@@ -20,5 +21,8 @@ public interface BookRepository extends PagingAndSortingRepository<Book, Integer
         // Make case-insensitive 'like' filter for all string properties
         bindings.bind(String.class).first((SingleValueBinding<StringPath, String>) StringExpression::containsIgnoreCase);
     }
+
+    @RestResource(path = "byExemplaireBarcode", rel="find by exemplaire Barcode")
+    Book findByExemplaires_barcode(int barcode);
 
 }

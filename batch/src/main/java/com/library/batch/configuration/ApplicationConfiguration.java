@@ -14,9 +14,11 @@ public class ApplicationConfiguration {
     String apiUserBaseUrl;
     String apiEmpruntBaseUrl;
     String apiBookBaseUrl;
+    String apiReservationBaseUrl;
     String apiUser;
     String apiPassword;
     int joursEmprunt;
     int joursProlongation;
+    int activeReservationTime;
 
 }

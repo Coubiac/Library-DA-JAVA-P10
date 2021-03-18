@@ -4,9 +4,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.library.appliweb.beans.LoginFormBean;
 import com.library.appliweb.configuration.ApplicationPropertiesConfiguration;
 import com.library.appliweb.configuration.Credentials;
+import com.library.appliweb.errors.UnauthorizedException;
 import com.library.appliweb.proxies.UserProxy;
 import com.library.appliweb.service.SecurityService;
 import feign.FeignException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.http.HttpHeaders;
@@ -35,6 +38,10 @@ public class SecurityController {
     @Autowired
     SecurityService securityService;
 
+    Logger logger = LoggerFactory.getLogger(SecurityController.class);
+
+
+
     @GetMapping(value = "/login")
     public String showLoginForm(Model model, String error, String logout) {
         if (error != null) {
@@ -49,7 +56,6 @@ public class SecurityController {
 
     @PostMapping(value = "/login")
     public ModelAndView login(@ModelAttribute("userForm") LoginFormBean userForm, HttpServletRequest request) throws FeignException {
-
         try {
             ResponseEntity<Void> responseEntity = userProxy.getToken(userForm);
             if (responseEntity.getStatusCode().is2xxSuccessful()) {
@@ -64,12 +70,21 @@ public class SecurityController {
             }
             else return new ModelAndView("security/login");
         }
-        catch (FeignException e){
+        catch (UnauthorizedException e){
             ModelAndView modelAndView = new ModelAndView("security/login");
-            modelAndView.addObject("error", "Votre nom d'utilisateur ou mot de passe est invalide.");
+            modelAndView.addObject("error", e.getLocalizedMessage());
             return modelAndView;
         }
 
+
+    }
+
+    @GetMapping(value = "/logout")
+    public RedirectView logout(){
+        securityService.removeAuthInSession();
+        RedirectView redirectView = new RedirectView();
+        redirectView.setUrl("/login");
+        return redirectView;
 
     }
 }

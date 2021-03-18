@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Accueil Bibliothèque</title>
-    <link rel="stylesheet" type="text/css" href="../webjars/bootstrap/4.0.0-2/css/bootstrap.min.css" />
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/4.0.0-2/css/bootstrap.min.css}"/>
+    <link rel="stylesheet" th:href="@{/webjars/font-awesome/5.15.1/css/all.css}">
 </head>
 <body>
 <div class="container">
@@ -23,6 +24,9 @@
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/emprunts">Mes emprunts</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/reservations">Mes réservations</a>
                 </li>
             </ul>
         </div>
@@ -74,15 +78,23 @@
                 <th scope="col">Auteur</th>
                 <th scope="col">Titre</th>
                 <th scope="col">Exemplaires</th>
+                <th scope="col">prochain retour</th>
+                <th scope="col">Position</th>
+                <th scope="col">Reserver</th>
             </tr>
             </thead>
             <tbody th:each="livre : ${livres}">
-
-                <th scope="row"><a th:href="@{/view(bookId=${livre.getId()})}" th:text="${livre.author}"></a></th>
-                <th scope="row"><a th:href="@{/view(bookId=${livre.getId()})}" th:text="${livre.title}"></a></th>
-                <th th:text="${livre.quantiteDispo + '/' + #lists.size(livre.exemplaires)}" scope="row">titre</th>
-
-
+            <tr>
+                <td scope="row"><a th:href="@{/view(bookId=${livre.getId()})}" th:text="${livre.author}"></a></td>
+                <td scope="row"><a th:href="@{/view(bookId=${livre.getId()})}" th:text="${livre.title}"></a></td>
+                <td th:text="${livre.quantiteDispo + '/' + #lists.size(livre.exemplaires)}" scope="row">titre</td>
+                <td th:if="${livre.nextReturn}" th:text="${#dates.format(livre.nextReturn, 'dd-MM-yyyy HH:mm')}" scope="row">titre</td>
+                <td th:if="${livre.nextReturn == null}" scope="row">N/A</td>
+                <td th:if="${livre.reservationPosition != 0}" th:text="${livre.reservationPosition}" scope="row">position</td>
+                <td th:if="${livre.reservationPosition == 0}" scope="row">N/A</td>
+                <td th:if="${livre.quantiteDispo == 0}" scope="row"><a class="btn btn-primary" <a th:href="@{/reserver(bookId=${livre.getId()})}" role="button">Réserver</a></td>
+                <td th:if="${livre.quantiteDispo != 0}" scope="row"><a class="btn btn-success" href="#" role="button">Dispo !</a></td>
+            </tr>
             </tbody>
         </table>
     </div>
@@ -91,5 +103,6 @@
 </div>
 
 <script type="text/javascript" src="../webjars/bootstrap/4.0.0-2/js/bootstrap.min.js"></script>
+<script th:src="@{/webjars/font-awesome/5.15.1/js/all.js}"></script>
 </body>
 </html>

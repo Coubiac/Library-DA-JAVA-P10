@@ -22,7 +22,13 @@ public class BookBean {
     private String overview;
     private String synopsis;
     private Integer quantiteDispo;
+    private Date nextReturn;
+    private List<ReservationBean> reservationBeans = new ArrayList<>();
     private List<ExemplaireBean> exemplaires = new ArrayList<>();
+    private String reservationPosition;
+
+
+
 
     @Override
     public String toString() {
