@@ -24,16 +24,14 @@ public class CustomErrorDecoder implements ErrorDecoder {
         if (response.status() == 401){
             return new UnauthorizedException("Authentication failed: bad credentials");
         }
-
         try {
             System.out.println(response.status());
             reader = response.body().asReader();
             //Easy way to read the stream and get a String object
             String result = CharStreams.toString(reader);
-            //use a Jackson ObjectMapper to convert the Json String into a
-            //Pojo
+            //we use a Jackson ObjectMapper to convert the Json String into a Pojo
             ObjectMapper mapper = new ObjectMapper();
-            //just in case you missed an attribute in the Pojo
+            //just in case we missed an attribute in the Pojo
             mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
             //init the Pojo
             ErrorMessage exceptionMessage = mapper.readValue(result,
@@ -47,11 +45,7 @@ public class CustomErrorDecoder implements ErrorDecoder {
             e.printStackTrace();
         }
         finally {
-
-            //It is the responsibility of the caller to close the stream.
             try {
-
-
                 if (reader != null)
                     reader.close();
 
