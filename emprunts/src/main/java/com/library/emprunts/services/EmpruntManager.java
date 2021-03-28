@@ -4,7 +4,7 @@ import com.library.emprunts.beans.BookBean;
 import com.library.emprunts.beans.ExemplaireBean;
 import com.library.emprunts.beans.ReservationBean;
 import com.library.emprunts.data.EmpruntEntity;
-import com.library.emprunts.exceptions.EmpruntManagerException;
+
 import com.library.emprunts.proxies.ExemplaireProxy;
 import com.library.emprunts.proxies.ReservationsProxy;
 import com.library.emprunts.repository.EmpruntEntityRepository;

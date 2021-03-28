@@ -9,6 +9,9 @@ import com.library.batch.beans.BookBean;
 import com.library.batch.beans.EmpruntBean;
 import com.library.batch.beans.ExemplaireBean;
 import com.library.batch.configuration.ApplicationConfiguration;
+import com.library.batch.schedulingtasks.ScheduledTasks;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -34,6 +37,8 @@ public class ExemplaireService {
     @Autowired
     MyRequestFactory myRequestFactory;
 
+    private static final Logger log = LoggerFactory.getLogger(ExemplaireService.class);
+
     public ExemplaireBean getExemplaireByBarcode(String barcode){
 
         RestTemplate restTemplate = myRequestFactory.getRestTemplate();
@@ -49,19 +54,19 @@ public class ExemplaireService {
         return response.getBody();
     }
 
-    public Boolean isExemplaireDispo(int barcode) throws JsonProcessingException {
+    public Boolean isExemplaireDispo(Integer barcode) throws JsonProcessingException {
 
         Collection<EmpruntBean> emprunts = empruntService.getEmprunts();
-
         if (emprunts.isEmpty()) return true;
-        Boolean returnValue = true;
         for (EmpruntBean emprunt : emprunts) {
-            if (emprunt.getDateRetour() == null) {
-                returnValue = false;
+            if (Integer.parseInt(emprunt.getExemplaireBarcode()) == barcode) {
+                log.info("L'exemplaire n'est pas dispo: " + barcode);
+                return false;
             }
 
         }
-        return returnValue;
+        log.info("L'exemplaire est dispo: " + barcode);
+        return true;
     }
 
     public List<ExemplaireBean> getExemplaireByBookId(int bookId) throws JsonProcessingException {

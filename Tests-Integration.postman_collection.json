@@ -1,0 +1,1462 @@
+{
+	"info": {
+		"_postman_id": "3800bc7e-8f47-44ff-a4a1-4f312ea2c41d",
+		"name": "Tests-Integration",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "Create User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201 Created\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"pm.test(\"A userId is return in the body\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"userId\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"firstName\":\"Benoit\",\n    \"lastName\":\"Grisot\",\n    \"email\":\"benoit.grisot+postman1@gmail.com\",\n    \"password\":\"password\",\n    \"address\":\"4 rue de la Turquoise\",\n    \"postalCode\":\"44140\",\n    \"city\":\"Aigrefeuille-sur-Maine\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:9003/users/",
+							"host": [
+								"localhost"
+							],
+							"port": "9003",
+							"path": [
+								"users",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Token is present\", function () {",
+									"    pm.response.to.have.header(\"token\");",
+									"});",
+									"",
+									"var token = pm.response.headers.get('token')",
+									"postman.setEnvironmentVariable(\"token\", token)",
+									"",
+									"var userId = pm.response.headers.get('userId')",
+									"postman.setEnvironmentVariable(\"userId\", userId)"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\":\"benoit.grisot+postman1@gmail.com\",\n    \"password\":\"password\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:9004/users/users/login",
+							"host": [
+								"localhost"
+							],
+							"port": "9004",
+							"path": [
+								"users",
+								"users",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get one User by userId",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var userId = postman.getEnvironmentVariable(\"userId\")",
+									"",
+									"pm.test(\"response body contain the userId\", function () {",
+									"    pm.expect(pm.response.text()).to.include(userId);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:9004/users/users/{{userId}}",
+							"host": [
+								"localhost"
+							],
+							"port": "9004",
+							"path": [
+								"users",
+								"users",
+								"{{userId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete an existing user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 204 No content\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "localhost:9004/users/users/Billy-Bones-2ed665c0-8000-497c-89a7-94d3b2ab8f48",
+							"host": [
+								"localhost"
+							],
+							"port": "9004",
+							"path": [
+								"users",
+								"users",
+								"Billy-Bones-2ed665c0-8000-497c-89a7-94d3b2ab8f48"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete a non-existent user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404 Not Found\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "localhost:9004/users/users/1234",
+							"host": [
+								"localhost"
+							],
+							"port": "9004",
+							"path": [
+								"users",
+								"users",
+								"1234"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Books",
+			"item": [
+				{
+					"name": "Get all books",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200 Ok\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"const responseJson = pm.response.json();",
+									"",
+									"pm.test(\"There is 15 elements per pages\", function () {",
+									"    pm.expect(responseJson.page.size).to.eql(15);",
+									"",
+									"});",
+									"pm.test(\"There is 33 pages\", function () {",
+									"    pm.expect(responseJson.page.totalPages).to.eql(33);",
+									"",
+									"});",
+									"pm.test(\"There is 494 books\", function () {",
+									"    pm.expect(responseJson.page.totalElements).to.eql(494);",
+									"",
+									"});",
+									"",
+									"pm.test(\"The author of the first book is Yvonne Verra\", function(){",
+									"    pm.expect(responseJson._embedded.books[0].author).to.eql(\"Yvonne Vera\")",
+									"",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:9004/books/books/",
+							"host": [
+								"localhost"
+							],
+							"port": "9004",
+							"path": [
+								"books",
+								"books",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search a book by author",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200 Ok\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"const responseJson = pm.response.json();",
+									"",
+									"pm.test(\"There is 15 elements per pages\", function () {",
+									"    pm.expect(responseJson.page.size).to.eql(15);",
+									"",
+									"});",
+									"",
+									"pm.test(\"The author of the first book is Yvonne Verra\", function(){",
+									"    pm.expect(responseJson._embedded.books[0].author).to.eql(\"Yvonne Vera\")",
+									"",
+									"});",
+									"pm.test(\"The isbn10 is 435910108\", function(){",
+									"    pm.expect(responseJson._embedded.books[0].isbn10).to.eql(435910108)",
+									"",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:9004/books/books?author=Yvonne Vera",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9004",
+							"path": [
+								"books",
+								"books"
+							],
+							"query": [
+								{
+									"key": "author",
+									"value": "Yvonne Vera"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search a book by title",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200 Ok\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"const responseJson = pm.response.json();",
+									"",
+									"pm.test(\"There is 15 elements per pages\", function () {",
+									"    pm.expect(responseJson.page.size).to.eql(15);",
+									"",
+									"});",
+									"",
+									"pm.test(\"The author of the first book is Yvonne Verra\", function(){",
+									"    pm.expect(responseJson._embedded.books[0].author).to.eql(\"Yvonne Vera\")",
+									"",
+									"});",
+									"pm.test(\"The isbn10 of the first book is 435910108\", function(){",
+									"    pm.expect(responseJson._embedded.books[0].isbn10).to.eql(435910108)",
+									"",
+									"});",
+									"pm.test(\"There is 108 books\", function () {",
+									"    pm.expect(responseJson.page.totalElements).to.eql(108);",
+									"",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:9004/books/books?title=anthology",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9004",
+							"path": [
+								"books",
+								"books"
+							],
+							"query": [
+								{
+									"key": "title",
+									"value": "anthology"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search a book by title with exemplaires",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200 Ok\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"const responseJson = pm.response.json();",
+									"",
+									"pm.test(\"There is 15 elements per pages\", function () {",
+									"    pm.expect(responseJson.page.size).to.eql(15);",
+									"",
+									"});",
+									"",
+									"pm.test(\"The author of the first book is Yvonne Verra\", function(){",
+									"    pm.expect(responseJson._embedded.books[0].author).to.eql(\"Yvonne Vera\")",
+									"",
+									"});",
+									"pm.test(\"The isbn10 of the first book is 435910108\", function(){",
+									"    pm.expect(responseJson._embedded.books[0].isbn10).to.eql(435910108)",
+									"",
+									"});",
+									"pm.test(\"There is 108 books\", function () {",
+									"    pm.expect(responseJson.page.totalElements).to.eql(108);",
+									"",
+									"});",
+									"pm.test(\"The barcode of the first exemplaire of the second book is 462993\", function () {",
+									"    pm.expect(responseJson._embedded.books[1].exemplaires[0].barcode).to.eql(462993);",
+									"",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:9004/books/books?title=anthology&projection=withExemplaires",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9004",
+							"path": [
+								"books",
+								"books"
+							],
+							"query": [
+								{
+									"key": "title",
+									"value": "anthology"
+								},
+								{
+									"key": "projection",
+									"value": "withExemplaires"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search a book by exemplaire barcode",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200 Ok\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"const responseJson = pm.response.json();",
+									"",
+									"pm.test(\"Le titre slug est opening-spaces\", function () {",
+									"    pm.expect(responseJson.titleSlug).to.eql(\"opening-spaces\");",
+									"",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:9004/books/books/search/byExemplaireBarcode?barcode=565478645",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9004",
+							"path": [
+								"books",
+								"books",
+								"search",
+								"byExemplaireBarcode"
+							],
+							"query": [
+								{
+									"key": "barcode",
+									"value": "565478645"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Exemplaires",
+			"item": [
+				{
+					"name": "Get all exemplaires",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200 Ok\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"const responseJson = pm.response.json();",
+									"",
+									"pm.test(\"There is 15 elements per pages\", function () {",
+									"    pm.expect(responseJson.page.size).to.eql(15);",
+									"",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:9004/books/exemplaires/",
+							"host": [
+								"localhost"
+							],
+							"port": "9004",
+							"path": [
+								"books",
+								"exemplaires",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get exemplaires by book id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200 Ok\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"const responseJson = pm.response.json();",
+									"",
+									"",
+									"pm.test(\"The barcode of the first exemplaire should be 235261\", function(){",
+									"    pm.expect(responseJson._embedded.exemplaires[0].barcode).to.eql(235261)",
+									"",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:9004/books/exemplaires/search/byBookId?bookId=5",
+							"host": [
+								"localhost"
+							],
+							"port": "9004",
+							"path": [
+								"books",
+								"exemplaires",
+								"search",
+								"byBookId"
+							],
+							"query": [
+								{
+									"key": "bookId",
+									"value": "5"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Emprunts",
+			"item": [
+				{
+					"name": "Add Emprunt",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201 Created\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"const responseJson = pm.response.json();",
+									"",
+									"pm.test(\"The response contain the user id and the exemplaireBarcode\", function(){",
+									"    pm.expect(responseJson.userId).to.eql(\"d431acba-b0f3-4e33-a53d-694226987eca\")",
+									"    pm.expect(responseJson.exemplaireBarcode).to.eql(\"6587547\")",
+									"",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"userId\": \"d431acba-b0f3-4e33-a53d-694226987eca\",\n    \"exemplaireBarcode\": \"6587547\",\n    \"dateEmprunt\": \"2021-03-23T12:05:24.000+00:00\",\n    \"isExtended\": false\n}\n\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:9004/emprunts/emprunts/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9004",
+							"path": [
+								"emprunts",
+								"emprunts",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all emprunts",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200 Ok\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"const responseJson = pm.response.json();",
+									"",
+									"pm.test(\"There is an emprunt for the exemplaire 235261\", function(){",
+									"    pm.expect(responseJson._embedded.empruntEntities[0].exemplaireBarcode).to.eql(\"235261\")",
+									"",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:9004/emprunts/emprunts/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9004",
+							"path": [
+								"emprunts",
+								"emprunts",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search emprunts by exemplareBarcode",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200 Ok\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"const responseJson = pm.response.json();",
+									"",
+									"pm.test(\"There is an emprunt for the exemplaire 312897\", function(){",
+									"    pm.expect(responseJson._embedded.empruntEntities[0].exemplaireBarcode).to.eql(\"312897\")",
+									"",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:9004/emprunts/emprunts/search/findByExemplaireBarcode?exemplaireBarcode=312897",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9004",
+							"path": [
+								"emprunts",
+								"emprunts",
+								"search",
+								"findByExemplaireBarcode"
+							],
+							"query": [
+								{
+									"key": "exemplaireBarcode",
+									"value": "312897"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Emprunt",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 204 No Content\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:9004/emprunts/emprunts/4",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9004",
+							"path": [
+								"emprunts",
+								"emprunts",
+								"4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Prolonge Emprunt après date butoir",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200 Ok\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"const responseJson = pm.response.json();",
+									"",
+									"pm.test(\"There is an emprunt for the exemplaire 312897\", function(){",
+									"    pm.expect(responseJson.isExtended).to.eql(true)",
+									"",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"isExtended\": \"true\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:9004/emprunts/emprunts/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9004",
+							"path": [
+								"emprunts",
+								"emprunts",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Reservations",
+			"item": [
+				{
+					"name": "Get all reservations",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200 Ok\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"const responseJson = pm.response.json();",
+									"",
+									"pm.test(\"There is 4 reservationEntities\", function(){",
+									"pm.expect(responseJson._embedded.reservationEntities.length).to.equal(4);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:9004/reservations/reservations/",
+							"host": [
+								"localhost"
+							],
+							"port": "9004",
+							"path": [
+								"reservations",
+								"reservations",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Find the oldest reservation of a book",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200 Ok\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"const responseJson = pm.response.json();",
+									"",
+									"pm.test(\"The bookId is = 2\", function(){",
+									"    pm.expect(responseJson.bookId).to.eql(2)",
+									"",
+									"});",
+									"",
+									"pm.test(\"userId is 50cd58ef-11d7-47b9-9f08-5d8ed83f154c\", function(){",
+									"    pm.expect(responseJson.userId).to.contain(\"50cd58ef-11d7-47b9-9f08-5d8ed83f154c\")",
+									"",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:9004/reservations/reservations/search/nextReservation?bookId=2",
+							"host": [
+								"localhost"
+							],
+							"port": "9004",
+							"path": [
+								"reservations",
+								"reservations",
+								"search",
+								"nextReservation"
+							],
+							"query": [
+								{
+									"key": "bookId",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create a reservation",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201 Created\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"bookId\": \"5\",\n    \"userId\": \"2ed665c0-7921-497c-89a7-94d3b2ab8f48\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:9004/reservations/reservations/",
+							"host": [
+								"localhost"
+							],
+							"port": "9004",
+							"path": [
+								"reservations",
+								"reservations",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete a reservation",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 204 Ok\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "localhost:9004/reservations/reservations/4",
+							"host": [
+								"localhost"
+							],
+							"port": "9004",
+							"path": [
+								"reservations",
+								"reservations",
+								"4"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Workflow",
+			"item": [
+				{
+					"name": "test double emprunt",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 500\", function () {",
+									"    pm.response.to.have.status(500);",
+									"});",
+									"const responseJson = pm.response.json();",
+									"",
+									"pm.test(\"Error: Vous avez déja emprunté ce livre\", function(){",
+									"    pm.expect(responseJson.message).to.eql(\"Vous avez deja emprunté ce livre\")",
+									"",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"userId\": \"John-Silver-50cd58ef-11d7-47b9-9f08-5d8ed83f154c\",\n    \"exemplaireBarcode\": \"823726\",\n    \"dateEmprunt\": \"2020-10-13T12:05:24.000+00:00\",\n    \"isExtended\": false\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:9004/emprunts/emprunts/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9004",
+							"path": [
+								"emprunts",
+								"emprunts",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Trop de reservations",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 500 Internal Server Error\", function () {",
+									"    pm.response.to.have.status(500);",
+									"});",
+									"const responseJson = pm.response.json();",
+									"",
+									"pm.test(\"Error: Il y a trop de reservations pour ce livre, essayez plus tard\", function(){",
+									"    pm.expect(responseJson.message).to.eql(\"Impossible de créer une nouvelle réservation: Il y a trop de reservations pour ce livre, essayez plus tard\")",
+									"",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"bookId\": \"10\",\n    \"userId\": \"{{userId}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:9004/reservations/reservations/",
+							"host": [
+								"localhost"
+							],
+							"port": "9004",
+							"path": [
+								"reservations",
+								"reservations",
+								""
+							]
+						},
+						"description": "La liste de réservation ne peut comporter qu’un maximum de personnes correspondant à 2x le nombre d’exemplaires de l’ouvrage."
+					},
+					"response": []
+				},
+				{
+					"name": "deja reserve",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 500 Internal Server Error\", function () {",
+									"    pm.response.to.have.status(500);",
+									"});",
+									"const responseJson = pm.response.json();",
+									"",
+									"pm.test(\"Error: Impossible de créer une nouvelle réservation: vous avez deja réservé ce livre\", function(){",
+									"    pm.expect(responseJson.message).to.eql(\"Impossible de créer une nouvelle réservation: vous avez deja réservé ce livre\")",
+									"",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"bookId\": \"7\",\n    \"userId\": \"Jack-Rackham-2ed665c0-7921-497c-89a7-94d3b2ab8f48\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:9004/reservations/reservations/",
+							"host": [
+								"localhost"
+							],
+							"port": "9004",
+							"path": [
+								"reservations",
+								"reservations",
+								""
+							]
+						},
+						"description": "La liste de réservation ne peut comporter qu’un maximum de personnes correspondant à 2x le nombre d’exemplaires de l’ouvrage."
+					},
+					"response": []
+				},
+				{
+					"name": "Reservation impossible exemplaires dispos",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 500 Internal Server Error\", function () {",
+									"    pm.response.to.have.status(500);",
+									"});",
+									"const responseJson = pm.response.json();",
+									"",
+									"pm.test(\"Error: Impossible de créer une nouvelle réservation: Des exemplaires sont deja disponibles\", function(){",
+									"    pm.expect(responseJson.message).to.eql(\"Impossible de créer une nouvelle réservation: Des exemplaires sont deja disponibles\")",
+									"",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"bookId\": \"1\",\n    \"userId\": \"b9cb236e-912c-468c-a636-ae1f4fe4723b\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:9004/reservations/reservations/",
+							"host": [
+								"localhost"
+							],
+							"port": "9004",
+							"path": [
+								"reservations",
+								"reservations",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "token",
+			"value": "token"
+		},
+		{
+			"key": "userId",
+			"value": "userId"
+		}
+	]
+}

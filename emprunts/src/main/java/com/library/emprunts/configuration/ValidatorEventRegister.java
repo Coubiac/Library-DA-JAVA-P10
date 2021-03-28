@@ -31,11 +31,9 @@ public class ValidatorEventRegister implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-<<<<<<< HEAD
-        List<String> events = Arrays.asList("beforeSave");
-=======
+
         List<String> events = Arrays.asList("beforeCreate");
->>>>>>> feature/Systeme_de_reservation
+
         for (Map.Entry<String, Validator> entry : validators.entrySet()) {
             events.stream()
                     .filter(p -> entry.getKey().startsWith(p))

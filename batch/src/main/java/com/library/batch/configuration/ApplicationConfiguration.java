@@ -11,6 +11,8 @@ public class ApplicationConfiguration {
 
     String senderEmail;
     String senderPassword;
+    String smtpHost;
+    String smtpPort;
     String apiUserBaseUrl;
     String apiEmpruntBaseUrl;
     String apiBookBaseUrl;

@@ -72,13 +72,20 @@ public class ScheduledTasks {
      */
     @Scheduled(cron = "10 * * * * ?")
     public void leLivreReserveEstDispo() throws JsonProcessingException {
-
+        log.info("checking Book dispo");
         List<ReservationBean> reservationBeans = reservationService.getNextReservations();
 
         for (ReservationBean reservation:reservationBeans
              ) {
-            updateBookReservationList(reservation.getBookId());
-            sendNotificationExemplaireDispo(reservation);
+            List<ExemplaireBean> exemplaireBeans = exemplaireService.getExemplaireByBookId(reservation.getBookId());
+            for (ExemplaireBean exemplaireBean: exemplaireBeans
+                 ) {
+                if (exemplaireService.isExemplaireDispo(exemplaireBean.getBarcode())){
+                    updateBookReservationList(reservation.getBookId());
+                    sendNotificationExemplaireDispo(reservation);
+                }
+            }
+
         }
 
     }
@@ -93,17 +100,15 @@ public class ScheduledTasks {
      */
     @Scheduled(cron = "10 * * * * ?")
     public void supprimeLesReservationsDontLeDelaiEstDepasse() throws JsonProcessingException {
+        log.info("purge des reservations");
         List<ReservationBean> reservationBeansToBeDeleted = reservationService.getOutdatedActiveReservations();
 
-        for (ReservationBean theReservationToBeDeleted:reservationBeansToBeDeleted
-             ) {
+        for (ReservationBean theReservationToBeDeleted:reservationBeansToBeDeleted) {
             int bookId = theReservationToBeDeleted.getBookId();
             reservationService.deleteReservation(theReservationToBeDeleted.getId().intValue());
             log.info("une reservation a été supprimée: " + theReservationToBeDeleted.getId());
-
             //Ensuite on met à jour la liste des reservations
             updateBookReservationList(bookId);
-
         }
 
     }
@@ -115,6 +120,7 @@ public class ScheduledTasks {
      * @throws JsonProcessingException quand il y a un problème de deserialization.
      */
     private void updateBookReservationList(int bookId) throws JsonProcessingException {
+        log.info("Maj Reservations");
         ReservationBean nextReservation = reservationService.getFirstReservation(bookId);
         if(nextReservation != null){
             UserBean theUser = userService.getUserById(nextReservation.getUserId());
@@ -145,7 +151,11 @@ public class ScheduledTasks {
                         exemplaireService.getBookById(reservation.getBookId() ).getTitle() +
                         ". Un exemplaire est à nouveau disponible, vous avez 48h pour venir le chercher";
                 mailService.sendmail(theUser, "Votre Reservation", theMessage );
-                log.info("Exemplaire dispo: " + theUser.getEmail() + " => " +exemplaireService.getBookById(reservation.getBookId() ).getTitle() );
+                log.info("EXEMPLAIRE DISPO : bookId: "
+                        + reservation.getBookId() +
+                        " userId: " + theUser.getUserId() +
+                        " Email: " + theUser.getEmail() +
+                        " Barcode: " + exemplaire.getBarcode() );
 
             }
         }

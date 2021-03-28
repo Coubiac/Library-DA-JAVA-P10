@@ -7,6 +7,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.library.batch.beans.ReservationBean;
 import com.library.batch.configuration.ApplicationConfiguration;
+import com.library.batch.schedulingtasks.ScheduledTasks;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -28,6 +31,8 @@ public class ReservationService {
     SecurityService securityService;
     @Autowired
     ApplicationConfiguration applicationConfiguration;
+
+    private static final Logger log = LoggerFactory.getLogger(ReservationService.class);
 
     /**
      * Cette méthode effectue une requete HTTP vers l'API reservation et récupère, pour chaque livre reservé,
@@ -78,6 +83,7 @@ public class ReservationService {
     }
 
     public void deleteReservation(int reservationId){
+        log.info("Suppression de la réservation: " + reservationId);
         String url = applicationConfiguration.getApiReservationBaseUrl() + reservationId;
         HttpEntity<String> request = new HttpEntity<>("body", securityService.authenticate());
         RestTemplate restTemplate = myRequestFactory.getRestTemplate();
