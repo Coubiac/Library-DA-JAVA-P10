@@ -36,8 +36,8 @@ public class EmpruntService {
 
         RestTemplate restTemplate = myRequestFactory.getRestTemplate();
         HttpEntity<String> request = new HttpEntity<>("body", securityService.authenticate());
-        String url = applicationConfiguration.getApiEmpruntBaseUrl() +"search/findEmpruntEntitiesByDateEmpruntBeforeAndDateRetourIsNull?dateEmprunt=" + getDateEmpruntAsString();
-
+        //String url = applicationConfiguration.getApiEmpruntBaseUrl() +"search/findEmpruntEntitiesByDateEmpruntBeforeAndDateRetourIsNull?dateEmprunt=" + getDateEmpruntAsString();
+        String url = applicationConfiguration.getApiEmpruntBaseUrl();
 
         ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, request, String.class);
 

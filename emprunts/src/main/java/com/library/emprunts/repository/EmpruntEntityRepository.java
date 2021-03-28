@@ -17,4 +17,5 @@ public interface EmpruntEntityRepository extends PagingAndSortingRepository<Empr
     Page<EmpruntEntity> findEmpruntEntitiesByUserId(String userId, Pageable paging);
     List<EmpruntEntity> findEmpruntEntitiesByDateEmpruntAfter(@DateTimeFormat(pattern = "yyyy-MM-dd")@Param("dateEmprunt")Date dateEmprunt);
     List<EmpruntEntity> findEmpruntEntitiesByDateEmpruntBeforeAndDateRetourIsNull(@DateTimeFormat(pattern = "yyyy-MM-dd")@Param("dateEmprunt")Date dateEmprunt);
+    List<EmpruntEntity> findEmpruntEntitiesByUserIdAndExemplaireBarcode(String userId, String exemplaireBarcode);
 }

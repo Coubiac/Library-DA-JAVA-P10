@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Accueil Bibliothèque</title>
+    <link rel="stylesheet" type="text/css" href="webjars/bootstrap/4.0.0-2/css/bootstrap.min.css" />
+</head>
+<body>
+<div class="container">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">Bibliotheque</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/">Livres</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/search">Recherche</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/emprunts">Mes emprunts</a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="/reservations">Mes réservations</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+
+    <h1>Application Bibliothèque</h1>
+    <div class="row">
+
+    <div class="table-responsive">
+        <table th:if="reservations" class="table table-hover">
+            <thead>
+            <tr>
+                <th scope="col">Date</th>
+                <th scope="col">Titre</th>
+                <th scope="col">Position</th>
+                <th scope="col">Prochain retour</th>
+            </tr>
+            </thead>
+            <tbody th:each="reservation : ${reservations}">
+            <tr>
+                <td th:text="${reservation.getDateReservation()}">Emprunt Id</td>
+                <td><a th:href="@{/view(bookId=${reservation.getBookBean().getId()})}" th:text="${reservation.getBookBean().getTitle()}"></a></td>
+                <td th:text="${reservation.getBookBean().getReservationPosition()}" scope="row">position</td>
+                <td th:text="${#dates.format(reservation.getBookBean().getNextReturn(), 'dd/MM/yyyy')}">Prochain retour</td>
+                <td><a class="btn btn-primary" th:href="@{/reservations/delete(reservationId=${reservation.getId()})}" role="button">Supprimer</a></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    </div>
+</div>
+
+<script type="text/javascript" src="webjars/bootstrap/4.0.0-2/js/bootstrap.min.js"></script>
+</body>
+</html>

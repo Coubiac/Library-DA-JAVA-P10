@@ -35,7 +35,7 @@
             <div class="col-sm-8">
                 <div th:if="${error}">
                     <div class="alert alert-danger">
-                        Désolé, vous avez rentré un mauvais nom d'utilisateur ou mot de passe
+                        <span th:text="${error}">Error</span>
                     </div>
                 </div>
                 <div th:if="${param.logout}">

@@ -1,5 +1,6 @@
 package com.library.appliweb.service;
 
+import com.library.appliweb.beans.BookBean;
 import com.library.appliweb.beans.EmpruntBean;
 import com.library.appliweb.beans.ExemplaireBean;
 import com.library.appliweb.configuration.ApplicationPropertiesConfiguration;
@@ -53,6 +54,11 @@ public class EmpruntService {
         return returnValue;
     }
 
+    /**
+     * Methode permettant de connaitre le nombre d'exemplaire d'un livre disponibles.
+     * @param bookId
+     * @return
+     */
     public Integer findExemplairesDispo(int bookId) {
         Collection<ExemplaireBean> exemplaireBeans = booksProxy.recupererExemplairesLivre(bookId).getContent();
         int exemplairesDispo = 0;
@@ -67,10 +73,11 @@ public class EmpruntService {
         return exemplairesDispo;
     }
 
-    public PagedResources<EmpruntBean> getEmpruntsByUserId(String userId, int page, int size)
-    {
-        PagedResources<EmpruntBean> emprunts = empruntsProxy.findByUserId(userId, page,size);
-
+    /**
+     * Methode permettant d'hydrater les emprunts avec la date de retour prévue calculée.
+     * @param emprunts
+     */
+    private void updateDateRetourPrevu(PagedResources<EmpruntBean> emprunts){
         for (EmpruntBean emprunt:emprunts){
             ExemplaireBean theExemplaire = exemplaireProxy.recupererExemplaire(emprunt.getExemplaireBarcode()).getContent();
             emprunt.setBookId(theExemplaire.getBook().getId());
@@ -86,7 +93,39 @@ public class EmpruntService {
             }
             emprunt.setDateRetourPrevu(c.getTime());
         }
+    }
+
+    public PagedResources<EmpruntBean> getEmpruntsByUserId(String userId, int page, int size)
+    {
+        PagedResources<EmpruntBean> emprunts = empruntsProxy.findByUserId(userId, page,size);
+        updateDateRetourPrevu(emprunts);
         return emprunts;
+    }
+
+    public EmpruntBean getNextActiveEmprunt(BookBean theBook){
+        List<ExemplaireBean> exemplaireBeans = theBook.getExemplaires();
+        List<EmpruntBean> empruntsActifs = new ArrayList<>();
+
+        for (ExemplaireBean exemplaire:exemplaireBeans
+             ) {
+            PagedResources<EmpruntBean> empruntBeans = empruntsProxy
+                    .findByExemplaireBarcode(exemplaire.getBarcode());
+            updateDateRetourPrevu(empruntBeans);
+            Collection<EmpruntBean> lesEmprunts = empruntBeans.getContent();
+
+            for (EmpruntBean emprunt: lesEmprunts
+                 ) {
+                if (emprunt.getDateRetour() == null){
+                    empruntsActifs.add(emprunt);
+                }
+            }
+        }
+        Collections.sort(empruntsActifs);
+        if(empruntsActifs.isEmpty()){
+            return null;
+        }
+
+        return empruntsActifs.get(0);
     }
 
     public void prolonge(Integer empruntId) {
